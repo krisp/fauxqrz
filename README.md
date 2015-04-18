@@ -44,7 +44,7 @@ Installing fauxqrz as a windows service:
 
 1. Test the program to make sure it works the way you expect.
 2. Add ```C:\python27\Lib\site-packages\pywin32_system32``` to your SYSTEM PATH environment variable (type variables into start search box, select edit system variables)
-3. Open an command promt as administrator, change working directory to the script's folder
+3. Open a command prompt as administrator, change working directory to the script's folder
 4. Install the service to start automatically: ```python fauxqrz.py --startup auto install```
 5. Start the service: ```python fauxqrz.py start```
 
