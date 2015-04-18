@@ -42,6 +42,31 @@ translate = [
               [ r'<qsldirect>.*</qsldirect>', r''],
             ]
 
+# fix for noaa data that HRD tries to download at launch
+class noaafix(object):
+    @cherrypy.expose
+    def index(self):
+        return "noaafix, part of fauxqrz (http://github.com/krisp/fauxqrz)"
+    @cherrypy.expose
+    def DSD_txt(self):
+        cherrypy.response.headers['Content-Type'] = "text/plain"
+        return requests.get("http://legacy-www.swpc.noaa.gov/ftpdir/indices/DSD.txt").content
+    @cherrypy.expose
+    def wwv_txt(self):
+        cherrypy.response.headers['Content-Type'] = "text/plain"
+        return requests.get("http://legacy-www.swpc.noaa.gov/ftpdir/latest/wwv.txt").content
+    @cherrypy.expose
+    def RecentIndices_txt(self):
+        cherrypy.response.headers['Content-Type'] = "text/plain"
+        return requests.get("http://legacy-www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt").content
+    @cherrypy.expose
+    def Predict_txt(self):        
+        cherrypy.response.headers['Content-Type'] = "text/plain"
+        return requests.get("http://legacy-www.swpc.noaa.gov/ftpdir/weekly/Predict.txt").content
+    Predict_low_txt = Predict_txt
+    Predict_high_txt = Predict_txt
+
+# translator for hamqth.com to qrz.com xml callsign data
 class fauxqrz(object):
     @cherrypy.expose
     def xml(self, *args, **kargs):
@@ -123,12 +148,15 @@ class fauxqrz(object):
             return "Invalid combination of options"
 
 if __name__ == "__main__":
-    print "===== fauxqrz starting up =====\nhttp://github.com/krisp/fauxqrz"
+    print "\n===== fauxqrz starting up =====\nhttp://github.com/krisp/fauxqrz"
     print "==============================="
     cherrypy.config.update({'server.socket_host': '127.0.0.5',
                             'server.socket_port': 80,
                        })
     cherrypy.tree.mount(fauxqrz(), "/xml/current")
     cherrypy.tree.mount(fauxqrz(), "/bin")
+    cherrypy.tree.mount(noaafix(), "/ftpdir/indices")
+    cherrypy.tree.mount(noaafix(), "/ftpdir/latest")
+    cherrypy.tree.mount(noaafix(), "/ftpdir/weekly")
     cherrypy.engine.start()
     cherrypy.engine.block()
