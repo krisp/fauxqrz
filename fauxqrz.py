@@ -1,6 +1,6 @@
 # fauxqrz.py -- Fool HRD Logbook into thinking this script is xmldata.qrz.com
 #               and feed it free hamqth.com data instead
-# pip install cherrypy requests
+# pip install cherrypy requests pypiwin32
 # add the following entries to %windir%\system32\drivers\etc\hosts:
 # 127.0.0.5 xmldata.qrz.com
 # 127.0.0.5 xml.qrz.com
@@ -9,8 +9,14 @@ import cherrypy
 import requests
 import re
 import os
+import sys
 from datetime import datetime
 from xml.etree import ElementTree
+
+if sys.platform == 'win32':
+    import win32serviceutil
+    import win32service
+    import ctypes
 
 hamqthurl = "http://www.hamqth.com/xml.php"
 
@@ -147,16 +153,57 @@ class fauxqrz(object):
         else:
             return "Invalid combination of options"
 
+class fauxqrzService(win32serviceutil.ServiceFramework):
+    """NT Service."""
+    _svc_name_ = "fauxqrzsvc"
+    _svc_display_name_ = "fauxqrz Service"
+
+    def SvcDoRun(self):
+        n = ctypes.windll.kernel32.GetEnvironmentVariableW(u'TEMP', None, 0)
+        buf = ctypes.create_unicode_buffer(u'\0'*n)
+        ctypes.windll.kernel32.GetEnvironmentVariableW(u'TEMP', buf, n)
+        tmpdir = buf.value
+        
+        cherrypy.config.update({                                
+                                'global':{
+                                    'log.screen': False,
+                                    'server.socket_port': 80,
+                                    'server.socket_host': '127.0.0.5',
+                                    'engine.autoreload.on': False,
+                                    'engine.SIGHUP': None,
+                                    'engine.SIGTERM': None,
+                                    'log.error_file': tmpdir + u'\\fauxqrz.log',
+                                    'log.access_file': tmpdir + u'\\fauxqrz.log',
+                                    'tools.log_tracebacks.on': True
+                                    }
+                           })
+        cherrypy.tree.mount(fauxqrz(), "/xml/current")
+        cherrypy.tree.mount(fauxqrz(), "/bin")
+        cherrypy.tree.mount(noaafix(), "/ftpdir/indices")
+        cherrypy.tree.mount(noaafix(), "/ftpdir/latest")
+        cherrypy.tree.mount(noaafix(), "/ftpdir/weekly")
+        cherrypy.engine.start()
+        cherrypy.engine.block()
+
+    def SvcStop(self):
+        self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
+        cherrypy.engine.exit()
+        self.ReportServiceStatus(win32service.SERVICE_STOPPED)
+
 if __name__ == "__main__":
     print "\n===== fauxqrz starting up =====\nhttp://github.com/krisp/fauxqrz"
     print "==============================="
-    cherrypy.config.update({'server.socket_host': '127.0.0.5',
-                            'server.socket_port': 80,
-                       })
-    cherrypy.tree.mount(fauxqrz(), "/xml/current")
-    cherrypy.tree.mount(fauxqrz(), "/bin")
-    cherrypy.tree.mount(noaafix(), "/ftpdir/indices")
-    cherrypy.tree.mount(noaafix(), "/ftpdir/latest")
-    cherrypy.tree.mount(noaafix(), "/ftpdir/weekly")
-    cherrypy.engine.start()
-    cherrypy.engine.block()
+
+    if(len(sys.argv) > 1 and sys.platform == 'win32'):
+        win32serviceutil.HandleCommandLine(fauxqrzService)
+    else:
+        cherrypy.config.update({'server.socket_host': '127.0.0.5',
+                                'server.socket_port': 80,
+                           })
+        cherrypy.tree.mount(fauxqrz(), "/xml/current")
+        cherrypy.tree.mount(fauxqrz(), "/bin")
+        cherrypy.tree.mount(noaafix(), "/ftpdir/indices")
+        cherrypy.tree.mount(noaafix(), "/ftpdir/latest")
+        cherrypy.tree.mount(noaafix(), "/ftpdir/weekly")
+        cherrypy.engine.start()
+        cherrypy.engine.block()
