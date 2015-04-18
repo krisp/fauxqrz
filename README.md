@@ -49,3 +49,9 @@ Installing fauxqrz as a windows service:
 5. Start the service: ```python fauxqrz.py start```
 
 The service can be managed the usual way from ```services.msc```. Omit ```--startup auto``` to leave the service in manual mode.
+
+When running as a service, the script will log its output to ```%TEMP%\fauxqrz.log```. This typically translates to ```C:\Windows\Temp``` when running the service as the system account.
+
+Service removal:
+
+1. Open an administrator command prompt and run ```python fauxqrz.py remove```
