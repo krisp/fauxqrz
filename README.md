@@ -5,7 +5,7 @@ This script intercepts requests from HRDLogbook (tested on 5.24.0.38) to the QRZ
 
 In order for this script to do its job, one must edit the ```hosts``` file or configure the lan DNS server to redirect QRZ.com's XML servers to the address the script binds to. To edit the ```hosts``` file on windows, you need to run Notepad as administrator.
 
-The following are the entries in my ```hosts``` file (%windir%\system32\drivers\etc\hosts on windows):
+The following are the entries in my ```hosts``` file (```%windir%\system32\drivers\etc\hosts on windows```):
 ```
 127.0.0.5 xml.qrz.com
 127.0.0.5 xmldata.qrz.com
@@ -16,7 +16,7 @@ Support to pass through the NOAA solar data that causes an "unknown error" when 
 ```
 127.0.0.5 www.swpc.noaa.gov
 ```
-If you are still seeing the error after making the change, delete the 4 or 5 text files from %appdata%\Simonb~1\HRDLog~1\ and restart HRDLogbook. 
+If you are still seeing the error after making the change, delete the 4 or 5 text files from ```%appdata%\Simonb~1\HRDLog~1\``` and restart HRDLogbook. 
 
 To use just the sunspot fix, leave the qrz entries out of your ```hosts``` file.
 
