@@ -10,6 +10,9 @@ the following entries to the hosts file (%windir%\system32\drivers\etc\hosts on 
 127.0.0.5 xmldata.qrz.com
 ```
 
+The script doesn't have to run locally however it does need to bind to port 80 which means it will need to run as root on an OS other than Windows. I bound it to 127.0.0.5 to keep it out of the way of any services that might bind to 127.0.0.1:80. 
+
+
 To install necessary modules:
 ```
 pip install requests cherrypy
