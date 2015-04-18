@@ -23,6 +23,6 @@ How to use:
 
 1. Register for a free account at www.hamqth.com.
 2. Install Python 2.7.9+, install modules quoted above, download script, run script. 
-3. Open HRDLogbook 5.x, Tools -> Options -> Callsign Lookup. Enter
+3. Open HRDLogbook 5.x, Tools -> Configure -> Callsign Lookup. Enter
 your hamqth login and password in the QRZ XML Service dialog and make sure it is enabled. Enter a callsign 
 in the test box at the bottom to make sure it is working.
