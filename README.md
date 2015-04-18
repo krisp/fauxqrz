@@ -1,10 +1,11 @@
 # fauxqrz
 QRZ XML interface emulator using free hamqth.com lookups
 
-This python script emulates the QRZ XML interface using lookups from hamqth.com's XML interface.
-In order for this script to intercept requests from Ham Radio Deluxe's Logbook, one must add
-the following entries to the hosts file (%windir%\system32\drivers\etc\hosts on windows):
+This script intercepts requests from HRDLogbook (tested on 5.24.0.38) to the QRZ XML callsign lookup and replies with data available for free from hamqth.com. 
 
+In order for this script to do its job, edit the hosts file or configure the lan DNS server to redirect QRZ.com's XML servers to the address the script binds to.
+
+The following are the entries in my hosts file (%windir%\system32\drivers\etc\hosts on windows):
 ```
 127.0.0.5 xml.qrz.com
 127.0.0.5 xmldata.qrz.com
@@ -18,6 +19,10 @@ To install necessary modules:
 pip install requests cherrypy
 ```
 
-Register for a free account at www.hamqth.com, open HRDLogbook 5.x, Tools -> Options -> Callsign Lookup. Enter
+How to use:
+
+1. Register for a free account at www.hamqth.com.
+2. Install Python 2.7.9+, install modules quoted above, download script, run script. 
+3. Open HRDLogbook 5.x, Tools -> Options -> Callsign Lookup. Enter
 your hamqth login and password in the QRZ XML Service dialog and make sure it is enabled. Enter a callsign 
 in the test box at the bottom to make sure it is working.
