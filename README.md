@@ -10,6 +10,14 @@ The following are the entries in my hosts file (%windir%\system32\drivers\etc\ho
 127.0.0.5 xml.qrz.com
 127.0.0.5 xmldata.qrz.com
 ```
+Run ```ipconfig /flushdns``` in a command window to reload the hosts file.
+
+Support to pass through the NOAA solar data that causes an "unknown error" when launching HRDLogbook has been added as well. The following hosts entry is needed for this to work:
+```
+127.0.0.5 www.swpc.noaa.gov
+```
+If you are still seeing the error after making the change, delete the 4 or 5 text files from %appdata%\Simonb~1\HRDLog~1\ and restart HRDLogbook.
+
 
 The script doesn't have to run locally however it does need to bind to port 80 which means it will need to run as root on an OS other than Windows. I bound it to 127.0.0.5 to keep it out of the way of any services that might bind to 127.0.0.1:80. 
 
