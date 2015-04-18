@@ -3,7 +3,7 @@ QRZ XML interface emulator using free hamqth.com lookups
 
 This script intercepts requests from HRDLogbook (tested on 5.24.0.38) to the QRZ XML callsign lookup and replies with data available for free from hamqth.com. 
 
-In order for this script to do its job, edit the hosts file or configure the lan DNS server to redirect QRZ.com's XML servers to the address the script binds to.
+In order for this script to do its job, one must edit the hosts file or configure the lan DNS server to redirect QRZ.com's XML servers to the address the script binds to. To edit the hosts file on windows, you need to run Notepad as administrator.
 
 The following are the entries in my hosts file (%windir%\system32\drivers\etc\hosts on windows):
 ```
