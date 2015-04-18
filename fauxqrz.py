@@ -14,7 +14,7 @@ from xml.etree import ElementTree
 hamqthurl = "http://www.hamqth.com/xml.php"
 
 translate = [
-              [ r'<callsign>(.*)</callsign>', r'<call>\1</call>'],
+              [ r'<callsign>(.*)</callsign>', lambda match: r'<call>%s</call>' % (match.group(1).upper())],
               [ r'<adif>(.*)</adif>', r'<dxcc>\1</dxcc>'],              
               [ r'<adr_name>(.*)\s(.*)</adr_name>', r'<fname>\1</fname><name>\2</name>'],
               [ r'adr_street1', r'addr1'],
@@ -26,10 +26,14 @@ translate = [
               [ r'adr_zip', r'zip'],
               [ r'adr_country', r'country'],
               [ r'adr_adif', r'ccode'],
-              [ r'<HamQTH version="2.6" xmlns="http://www.hamqth.com">', r'<QRZDatabase version="1.33">'],
+              [ r'<HamQTH version="2.6" xmlns="http://www.hamqth.com">', r'<QRZDatabase version="1.33" xmlns="http://www.qrz.com">'],
               [ r'<search>', r'<Callsign>'],
               [ r'</search>', r'</Callsign>'],
               [ r'</HamQTH>', r''],
+              [ r'<(.*)>\?</.*>', r'<\1>N</\1>' ],
+              [ r'<itu>(.*)</itu>', r'<ituzone>\1</ituzone>'],
+              [ r'<cq>(.*)</cq>', r'<cqzone>\1</cqzone>'],
+              [ r'utc_offset', r'GMTOffset'],
             ]
 
 class fauxqrz(object):
@@ -57,7 +61,7 @@ class fauxqrz(object):
             # error the way qrz would if login to h
             if "Wrong" in key:
                 return """<?xml version="1.0" encoding="iso-8859-1" ?>
-<QRZDatabase version="1.33" xmlns="http://xmldata.qrz.com">
+<QRZDatabase version="1.33" xmlns="http://www.qrz.com">
 <Session>
 <Error>Password Incorrect</Error>
 <GMTime>"""+now+"""</GMTime>
@@ -67,7 +71,7 @@ class fauxqrz(object):
 
             # return hamqth.com key            
             return """<?xml version="1.0" ?> 
-<QRZDatabase version="1.33">
+<QRZDatabase version="1.33" xmlns="http://www.qrz.com">
   <Session>
     <Key>"""+key+"""</Key> 
     <Count>1</Count> 
@@ -80,17 +84,14 @@ class fauxqrz(object):
         if callsign and s:
             cherrypy.response.headers['Content-Type'] = "text/xml"
 
-            r = requests.get(hamqthurl + "?id=%s&callsign=%s&prg=fauxqrz" % (s,callsign))
+            r = requests.get(hamqthurl + "?id=%s&callsign=%s&prg=fauxqrz" % (s,callsign.upper()))
             xml = r.content
-            #t = ElementTree.fromstring(r.content)
 
             # translate raw xml text
-            newxml = xml
             for x in (translate):
-                newxml = re.sub(x[0], x[1], newxml)
+                xml = re.sub(x[0], x[1], xml)
             
-            return newxml + """
-  <Session>
+            return xml + """   <Session>
       <Key>"""+s+"""</Key> 
       <Count>1</Count> 
       <SubExp>Thu Jan 1 12:00:00 2099</SubExp> 
