@@ -25,7 +25,7 @@ The script doesn't have to run locally however it does need to bind to port 80 w
 Installation:
 
 1. Install python 2.7.9+ (https://www.python.org/ftp/python/2.7.9/python-2.7.9.msi). Check "Add python to path" on the last screen.
-2. Run a command prompt and run ```pip install requests cherrypy```
+2. Run a command prompt and run ```pip install requests cherrypy pypiwin32```
 3. Run notepad as administrator and edit ```%windir%\system32\drivers\etc\hosts```, add the appropriate entries listed above.
 4. Flush dns from the command line: ```iptables /flushdns```
 5. Delete text files from ```%appdata%\Simonb~1\HRDLog~1\``` for solar data fix
@@ -39,3 +39,13 @@ your hamqth login and password in the QRZ XML Service dialog and make sure it is
 in the test box at the bottom to make sure it is working. I suggest using a callsign you haven't looked up
 recently as HRDLogbook seems to cache lookups for a period of time. You will be able to determine if the 
 callsign data was provided by the script by checking the output in the dos window.
+
+Installing fauxqrz as a windows service:
+
+1. Test the program to make sure it works the way you expect.
+2. Add ```C:\python27\Lib\site-packages\pywin32_system32``` to your SYSTEM PATH environment variable (type variables into start search box, select edit system variables)
+3. Open an command promt as administrator, change working directory to the script's folder
+4. Install the service to start automatically: ```python fauxqrz.py --startup auto install```
+5. Start the service: ```python fauxqrz.py start```
+
+The service can be managed the usual way from ```services.msc```. Omit ```--startup auto``` to leave the service in manual mode.
