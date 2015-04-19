@@ -52,7 +52,7 @@ translate = [
 class noaafix(object):
     @cherrypy.expose
     def index(self):
-        return "noaafix, part of fauxqrz (http://github.com/krisp/fauxqrz)"
+        return "noaafix, part of <a href=\"http://github.com/krisp/fauxqrz\">fauxqrz (http://github.com/krisp/fauxqrz)</a>"
     @cherrypy.expose
     def DSD_txt(self):
         cherrypy.response.headers['Content-Type'] = "text/plain"
@@ -81,7 +81,7 @@ class fauxqrz(object):
     @cherrypy.expose
     def index(self, username=0, password=0, agent=0, s=0, callsign=0, bio=0):        
 	if not username and not callsign and not bio:
-            return "fauxqrz runs here (http://github.com/krisp/fauxqrz)"
+            return "<a href=\"http://github.com/krisp/fauxqrz\">fauxqrz (http://github.com/krisp/fauxqrz)</a> runs here "
 
         now = datetime.utcnow().ctime()
         # logging in
@@ -177,6 +177,7 @@ class fauxqrzService(win32serviceutil.ServiceFramework):
                                     'tools.log_tracebacks.on': True
                                     }
                            })
+        cherrypy.tree.mount(fauxqrz(), "/")
         cherrypy.tree.mount(fauxqrz(), "/xml/current")
         cherrypy.tree.mount(fauxqrz(), "/bin")
         cherrypy.tree.mount(noaafix(), "/ftpdir/indices")
@@ -200,6 +201,7 @@ if __name__ == "__main__":
         cherrypy.config.update({'server.socket_host': '127.0.0.5',
                                 'server.socket_port': 80,
                            })
+        cherrypy.tree.mount(fauxqrz(), "/")
         cherrypy.tree.mount(fauxqrz(), "/xml/current")
         cherrypy.tree.mount(fauxqrz(), "/bin")
         cherrypy.tree.mount(noaafix(), "/ftpdir/indices")
