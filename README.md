@@ -30,6 +30,8 @@ Installation:
 4. Flush dns from the command line: ```iptables /flushdns```
 5. Delete text files from ```%appdata%\Simonb~1\HRDLog~1\``` for solar data fix
 6. Sign up for a hamqth.com account and configure QRZ lookup using your hamqth.com login.
+7. Download fauzqrs using the "Download Zip" link on the right, unzip to a folder on your PC
+8. Double-click fauxqrz.py to run it in the foreground. (Follow directions below to install as a service if you want it to run in the background and start with windows)
 
 How to set up hamqth passthrough in HRDLogbook
 
