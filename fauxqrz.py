@@ -80,7 +80,7 @@ class fauxqrz(object):
 
     @cherrypy.expose
     def index(self, username=0, password=0, agent=0, s=0, callsign=0, bio=0):        
-	if not username and not callsign and not bio:
+        if not username and not callsign and not bio:
             return "<a href=\"http://github.com/krisp/fauxqrz\">fauxqrz (http://github.com/krisp/fauxqrz)</a> runs here "
 
         now = datetime.utcnow().ctime()
@@ -119,7 +119,7 @@ class fauxqrz(object):
             cherrypy.response.headers['Content-Type'] = "text/xml"
 
             r = requests.get(hamqthurl + "?id=%s&callsign=%s&prg=fauxqrz" % (s,callsign.upper()))
-            xml = r.content
+            xml = r.content.decode()
 
             # translate xml from hamqth format to qrz format
             for x in (translate):
@@ -153,7 +153,8 @@ class fauxqrz(object):
         else:
             return "Invalid combination of options"
 
-class fauxqrzService(win32serviceutil.ServiceFramework):
+if sys.platform == 'win32':
+  class fauxqrzService(win32serviceutil.ServiceFramework):
     """NT Service."""
     _svc_name_ = "fauxqrzsvc"
     _svc_display_name_ = "fauxqrz Service"
@@ -168,7 +169,7 @@ class fauxqrzService(win32serviceutil.ServiceFramework):
                                 'global':{
                                     'log.screen': False,
                                     'server.socket_port': 80,
-                                    'server.socket_host': '127.0.0.5',
+                                    'server.socket_host': '0.0.0.0',
                                     'engine.autoreload.on': False,
                                     'engine.SIGHUP': None,
                                     'engine.SIGTERM': None,
@@ -192,13 +193,13 @@ class fauxqrzService(win32serviceutil.ServiceFramework):
         self.ReportServiceStatus(win32service.SERVICE_STOPPED)
 
 if __name__ == "__main__":
-    print "\n===== fauxqrz starting up =====\nhttp://github.com/krisp/fauxqrz"
-    print "==============================="
+    print("\n===== fauxqrz starting up =====\nhttp://github.com/krisp/fauxqrz")
+    print("===============================")
 
     if(len(sys.argv) > 1 and sys.platform == 'win32'):
         win32serviceutil.HandleCommandLine(fauxqrzService)
     else:
-        cherrypy.config.update({'server.socket_host': '127.0.0.5',
+        cherrypy.config.update({'server.socket_host': '0.0.0.0',
                                 'server.socket_port': 80,
                            })
         cherrypy.tree.mount(fauxqrz(), "/")
